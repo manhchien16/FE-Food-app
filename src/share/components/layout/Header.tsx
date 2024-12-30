@@ -1,4 +1,4 @@
-import { Button, Input, Row, Col, Badge, Typography } from 'antd';
+import { Button, Input, Row, Col, Badge, Typography, Dropdown, Menu } from 'antd';
 import Link from 'next/link';
 import { ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import { useAuth } from "@/share/hook/userAuth";
@@ -9,6 +9,7 @@ import Search from '../Search';
 import React from 'react';
 
 const { Text } = Typography;
+
 
 const HeaderComponents = () => {
     const [logoutSever, { isSuccess, isLoading, isError }] = useLogOutMutation();
@@ -32,6 +33,20 @@ const HeaderComponents = () => {
             }
         })
     }
+    const menu = (
+        <Menu>
+            <Menu.Item key="logout">
+                <Button style={{ color: '#EE6D1F', width: '100%' }}>
+                    <Link href={'restaurant/profile'}>Profile</Link>
+                </Button>
+            </Menu.Item>
+            <Menu.Item key="order">
+                <Button onClick={onclickLogOut} style={{ color: '#EE6D1F', width: '100%' }}>
+                    Logout
+                </Button>
+            </Menu.Item>
+        </Menu>
+    );
 
     return (
         <>
@@ -79,23 +94,28 @@ const HeaderComponents = () => {
                     >
                         {user ? (
                             <>
-                                <div
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '5px',
-                                        color: '#fff',
-                                        fontSize: '1rem',
-                                    }}
-                                >
-                                    <UserOutlined style={{ fontSize: '1.2rem', color: '#efbbab' }} />
-                                    <Text strong style={{ color: '#fff' }}>
-                                        <Link className='text-white' href={{ pathname: `/restaurant/profile` }}>{user.fullName}</Link>
-                                    </Text>
-                                </div>
-                                <Button onClick={onclickLogOut} style={{ backgroundColor: '#efbbab', color: 'white' }}>
-                                    Logout
-                                </Button>
+                                <>
+                                    <Dropdown
+                                        overlay={menu}
+                                        trigger={['hover']}
+                                    >
+                                        <div
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '5px',
+                                                color: '#fff',
+                                                fontSize: '1rem',
+                                                cursor: 'pointer',
+                                            }}
+                                        >
+                                            <UserOutlined style={{ fontSize: '1.2rem', color: '#efbbab' }} />
+                                            <Text strong style={{ color: '#fff' }}>
+                                                {user.fullName}
+                                            </Text>
+                                        </div>
+                                    </Dropdown>
+                                </>
                             </>
                         ) : (
                             <Button style={{ backgroundColor: '#efbbab', color: 'white' }}>

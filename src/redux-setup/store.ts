@@ -1,12 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { userService } from "./service/api/userService";
-import { authService } from "./service/api/authService";
-import { productService } from "./service/api/productService";
 import storage from "redux-persist/lib/storage";
 import { persistReducer, persistStore } from "redux-persist";
 import userReducer from "@/redux-setup/slice/userSlice";
 import { cartService } from "./service/api/orderService";
-import tokenMiddleware from "./middleware/tokenMiddleware";
+import { userService } from "./service/api/userService";
+import { authService } from "./service/api/authService";
+import { productService } from "./service/api/productService";
 
 
 const persistConfigUser = {
@@ -33,7 +32,7 @@ export const store = configureStore({
                 userService.middleware,
                 authService.middleware,
                 productService.middleware,
-            ),
+            )
 });
 
 export const persistor = persistStore(store);

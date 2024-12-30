@@ -7,10 +7,10 @@ import {
     FetchBaseQueryError,
 } from '@reduxjs/toolkit/query';
 import Swal from "sweetalert2";
-import { updateAccessToken } from "@/redux-setup/slice/userSlice";
-import { readAccessToken } from "@/ultils/storage/readAccessToken";
+import { readAccessToken, writeAccessToken } from "@/ultils/storage/accessToken";
+import { updateAccessToken } from "../slice/userSlice";
+import { store } from "../store";
 export const NODE_ENV = process.env.NEXT_PUBLIC_NODE_ENV;
-import { store } from "@/redux-setup/store";
 
 
 interface IInstance {
@@ -31,8 +31,6 @@ export const instance = axios.create({
     responseType: "json",
     headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + readAccessToken(),
-        // "Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmQ1YWJhNjUzNzBlYTlmZWFiOGM1ZCIsImVtYWlsIjoidnVtYW5oY2hpZW4xMDJAZ21haWwuY29tIiwicm9sZSI6ImN1c3RvbWVyIiwiaWF0IjoxNzM1NDYyMjI4LCJleHAiOjE3MzU0NjIyMzh9.Ru9hExm6gbaaY0496SQ8Va22Xd2zP44n8G0NlWHsPrw"
     },
 });
 
@@ -45,6 +43,19 @@ const refreshInstance = axios.create({
     withCredentials: true,
 });
 
+instance.interceptors.request.use(
+    (config: any) => {
+        const accessToken = readAccessToken();
+        config.headers.Authorization = 'Bearer ' + accessToken;
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    },
+);
+
+
+
 instance.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -55,9 +66,9 @@ instance.interceptors.response.use(
                 try {
                     const newTokenResponse = await refreshInstance.post(`/auth/refresh-token`);
                     const newToken = newTokenResponse?.data?.accessToken;
-                    originalRequest.headers.Authorization = 'Bearer ' + newToken;
-                    // store.dispatch(updateAccessToken({ accessToken: newToken }))
-                    return await instance(originalRequest);
+                    await writeAccessToken(newToken);
+                    // store.dispatch(updateAccessToken(newToken));
+                    return instance(originalRequest);
                 } catch (refreshError) {
                     console.error("Refresh token error:", refreshError);
                 }
@@ -77,7 +88,6 @@ const instances: IInstance = {
         instance: instance,
     }
 };
-
 
 // Generic Function to Call APIs
 const callApi = async (args: any) => {

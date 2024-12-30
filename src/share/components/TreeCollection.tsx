@@ -47,6 +47,7 @@ const Collection: React.FC<priceProps> = ({ setPriceRanges, minMax }) => {
                         style={{ marginLeft: '5px ' }}
                         value={priceRange.minPrice}
                         onChange={onMinPriceChange}
+                        formatter={(value) => `$ ${value}`}
                     />
                 </Col>
             </Row>
@@ -67,6 +68,7 @@ const Collection: React.FC<priceProps> = ({ setPriceRanges, minMax }) => {
                         style={{ marginLeft: '5px ' }}
                         value={priceRange?.maxPrice}
                         onChange={onMaxPriceChange}
+                        formatter={(value) => `$ ${value}`}
                     />
                 </Col>
             </Row>

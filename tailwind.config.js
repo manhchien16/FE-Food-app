@@ -7,13 +7,15 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    colors: {
-      'btn-primary': '#EE6D1F',
-      "text-primary": "#EE6D1F",
-      'secondary': '#9333EA',
-      'neutral': '#64748B',
+    extend: {
+      colors: {
+        'btn-primary': '#EE6D1F',
+        'text-primary': '#EE6D1F',
+        'primary': '#EE6D1F',
+        'secondary': '#9333EA',
+        'neutral': '#64748B',
+      },
     },
-    extend: {},
   },
   plugins: [
     require("daisyui"),

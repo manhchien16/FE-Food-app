@@ -15,7 +15,7 @@ const NavBar: React.FC = () => {
     const { data, isLoading, isError } = useGetCategoriesQuery();
     const newData = data?.data?.data;
     const items: MenuItem[] = newData ? newData?.map((category: any) => ({
-        label: category.title,
+        label: <b>{category.title.toUpperCase()}</b>,
         key: category._id,
     })) : [];
 
@@ -32,7 +32,7 @@ const NavBar: React.FC = () => {
 
     return (
         <Container>
-            <Menu className='' onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} />
+            <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={items} />
         </Container>
     )
 };
