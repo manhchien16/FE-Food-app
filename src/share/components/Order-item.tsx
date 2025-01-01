@@ -54,7 +54,7 @@ const OrderItem: React.FC<keyProps> = ({ status, dateTime }) => {
                 case 'delivered':
                     return data.deliveredDate;
                 case 'canceled':
-                    return data.canceled;
+                    return data.canceledDate;
                 default:
                     return undefined;
             }
@@ -126,12 +126,12 @@ const OrderItem: React.FC<keyProps> = ({ status, dateTime }) => {
                         </Col>
                         <Col span={12}>
                             <div className="flex justify-end text-primary-xxl">
-                                <strong className="pr-1">Total Price:</strong>
-                                <span className="text-text-primary">${item.totalPrice}</span>
-                            </div>
-                            <div className="flex justify-end text-primary-xxl">
                                 <strong className="pr-1">Payment Method:</strong>
                                 <span className="text-text-primary">{item.paymentMethod}</span>
+                            </div>
+                            <div className="flex justify-end text-primary-xxl flex items-center">
+                                <strong className="pr-1">Total Price:</strong>
+                                <span className="text-text-primary font-bold text-xl">${item.totalPrice}</span>
                             </div>
                         </Col>
                     </Row>

@@ -1,5 +1,6 @@
 "use client";
-import { useDeleteOrderDetailsMutation, useGetOrderByStatusQuery, useLazyGetOrderByStatusQuery, useLazyGetOrderDetailsQuery, useOnlinePaymenMutation, useUpdateOrderMutation, useUpdateStatusMutation } from '@/redux-setup/service/api/orderService';
+import { useStatus } from '@/context/useStatusStateContext';
+import { useDeleteOrderDetailsMutation, useLazyGetOrderByStatusQuery, useLazyGetOrderDetailsQuery, useOnlinePaymenMutation, useUpdateOrderMutation, useUpdateStatusMutation } from '@/redux-setup/service/api/orderService';
 import CartItem from '@/share/components/Cart-item';
 import { useAuth } from '@/share/hook/userAuth';
 import { loadStripe } from '@stripe/stripe-js';
@@ -23,7 +24,10 @@ const CreateSchema = Yup.object().shape({
         .min(10, 'Address is too short')
         .max(200, 'Address is too long')
         .required('Address is required'),
-}); 78
+
+    paymentMethod: Yup.string()
+        .required('Payment method is required')
+});
 
 const CartPage: React.FC = () => {
     const [currentQuantity, setCurrentQuantity] = useState<any>();
@@ -36,8 +40,8 @@ const CartPage: React.FC = () => {
     const [deleteOrderDetail, { isLoading: deleting, isSuccess: deleteSuccess }] = useDeleteOrderDetailsMutation();
     const [updateStatus, { isLoading: updating, isSuccess: updateSucces, isError: updateError }] = useUpdateStatusMutation();
     const [payment, { isLoading: paymentLoading }] = useOnlinePaymenMutation();
-
     const newData = dataOrder?.data?.data[0];
+    const { setStatusState } = useStatus()
 
     useEffect(() => {
         if (dataOrderDetails?.data?.data) {
@@ -74,6 +78,7 @@ const CartPage: React.FC = () => {
                 phoneNumber: value?.phoneNumber
             }).unwrap();
             Swal.fire('Sucess', 'Order sucessfully!', 'success');
+            setStatusState(true)
         } else {
             const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY || "");
             if (!stripe) {
@@ -148,7 +153,11 @@ const CartPage: React.FC = () => {
                                     onFinish={handleSubmit}
                                 >
                                     <Form.Item
-                                        label="Phone Number"
+                                        label={
+                                            <Typography.Text>
+                                                Phone Number <span style={{ color: "red" }}>*</span>
+                                            </Typography.Text>
+                                        }
                                         validateStatus={errors.phoneNumber && touched.phoneNumber ? "error" : ""}
                                         help={touched.phoneNumber && errors.phoneNumber ? errors.phoneNumber : ""}
                                     >
@@ -162,7 +171,11 @@ const CartPage: React.FC = () => {
                                     </Form.Item>
 
                                     <Form.Item
-                                        label="Full Name"
+                                        label={
+                                            <Typography.Text>
+                                                Full Name <span style={{ color: "red" }}>*</span>
+                                            </Typography.Text>
+                                        }
                                         validateStatus={errors.fullName && touched.fullName ? "error" : ""}
                                         help={touched.fullName && errors.fullName ? errors.fullName : ""}
                                     >
@@ -176,7 +189,11 @@ const CartPage: React.FC = () => {
                                     </Form.Item>
 
                                     <Form.Item
-                                        label="Address"
+                                        label={
+                                            <Typography.Text>
+                                                Address <span style={{ color: "red" }}>*</span>
+                                            </Typography.Text>
+                                        }
                                         validateStatus={errors.address && touched.address ? "error" : ""}
                                         help={touched.address && errors.address ? errors.address : ""}
                                     >
@@ -190,9 +207,13 @@ const CartPage: React.FC = () => {
                                     </Form.Item>
 
                                     <Form.Item
-                                        label="Payment Method"
-                                        name="paymentMethod"
-                                        rules={[{ required: true, message: 'Please select a payment method!' }]}
+                                        label={
+                                            <Typography.Text>
+                                                Payment Method <span style={{ color: "red" }}>*</span>
+                                            </Typography.Text>
+                                        }
+                                        validateStatus={errors.paymentMethod && touched.paymentMethod ? "error" : ""}
+                                        help={touched.paymentMethod && errors.paymentMethod ? errors.paymentMethod : ""}
                                     >
                                         <Radio.Group
                                             name="paymentMethod"
@@ -205,8 +226,19 @@ const CartPage: React.FC = () => {
                                     </Form.Item>
 
                                     <Form.Item>
-                                        <Typography.Text strong style={{ fontSize: '16px', color: '#EE6D1F', display: 'flex', justifyContent: 'flex-end' }}>
-                                            Total Price: {`$${localOrderDetails.reduce((acc: number, item: any) => acc + parseFloat(item.price), 0)}`}
+                                        <Typography.Text
+                                            strong
+                                            style={{
+                                                fontSize: "16px",
+                                                color: "#EE6D1F",
+                                                display: "flex",
+                                                justifyContent: "flex-end",
+                                            }}
+                                        >
+                                            Total Price: {`$${localOrderDetails.reduce(
+                                                (acc: number, item: any) => acc + parseFloat(item.price),
+                                                0
+                                            )}`}
                                         </Typography.Text>
                                     </Form.Item>
 
@@ -214,10 +246,10 @@ const CartPage: React.FC = () => {
                                         <Button
                                             style={{
                                                 backgroundColor: "#EE6D1F",
-                                                marginTop: 'auto',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center'
+                                                marginTop: "auto",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
                                             }}
                                             type="primary"
                                             htmlType="submit"

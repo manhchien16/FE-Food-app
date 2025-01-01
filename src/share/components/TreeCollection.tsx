@@ -5,15 +5,24 @@ interface priceProps {
     setPriceRanges: (priceRange: { minPrice: number; maxPrice: number }) => void;
     minMax: {
         minPrice: number,
-        maxPrice: number
+        maxPrice: number,
+        priceAllMin: number,
+        priceAllMax: number
     }
 }
 
 const Collection: React.FC<priceProps> = ({ setPriceRanges, minMax }) => {
     const [priceRange, setPriceRange] = useState({
-        maxPrice: minMax?.maxPrice,
-        minPrice: minMax?.minPrice,
+        maxPrice: minMax?.maxPrice || minMax?.priceAllMax,
+        minPrice: minMax?.minPrice || minMax?.priceAllMin,
     });
+
+    useEffect(() => {
+        setPriceRange({
+            maxPrice: minMax?.maxPrice,
+            minPrice: minMax?.minPrice,
+        });
+    }, [minMax])
 
     useEffect(() => {
         setPriceRanges(priceRange);

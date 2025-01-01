@@ -6,18 +6,43 @@ import { useRouter } from 'next/navigation';
 import { useLogOutMutation } from '@/redux-setup/service/api/authService';
 import Swal from 'sweetalert2';
 import Search from '../Search';
-import React from 'react';
-
+import React, { useEffect, useState } from 'react';
+import { useNumber } from '@/context/useNumberContext';
+import { useLazyGetOrderByStatusQuery, useLazyGetOrderDetailsQuery } from '@/redux-setup/service/api/orderService';
+import { useStatus } from '@/context/useStatusStateContext';
 const { Text } = Typography;
 
 
 const HeaderComponents = () => {
     const [logoutSever, { isSuccess, isLoading, isError }] = useLogOutMutation();
+    const [numberCart, setNumberCart] = useState<number>();
     const router = useRouter();
     const { user, logout } = useAuth();
+    const { number } = useNumber();
+    const [dataOrders, { data: dataOrder, isSuccess: orderSuccess }] = useLazyGetOrderByStatusQuery();
+    const [dataOrderDetail, { data: dataOrderDetails }] = useLazyGetOrderDetailsQuery();
+    const { StatusState, setStatusState } = useStatus();
+    const newData = dataOrder?.data?.data[0];
+
+    useEffect(() => {
+        setNumberCart(dataOrderDetails?.data?.pagination?.totalItem)
+    }, [dataOrderDetails])
+
+    useEffect(() => {
+        if (user) {
+            dataOrders({ status: "cart", id: user?._id || "" })
+        }
+    }, [StatusState])
+    useEffect(() => {
+        if (newData?._id) {
+            dataOrderDetail(newData?._id);
+            setStatusState(false)
+        } else {
+            setNumberCart(0)
+        }
+    }, [dataOrder, dataOrderDetail, isSuccess, StatusState]);
 
     const onclickLogOut = async () => {
-
         Swal.fire({
             title: 'Do you want to logout?',
             icon: 'warning',
@@ -123,7 +148,7 @@ const HeaderComponents = () => {
                             </Button>
                         )}
                         {/* Cart */}
-                        <Badge count={3} offset={[10, 0]}>
+                        <Badge count={numberCart} offset={[10, 0]}>
                             <Link href="/restaurant/cart">
                                 <ShoppingCartOutlined style={{ fontSize: '24px', color: '#111' }} />
                             </Link>

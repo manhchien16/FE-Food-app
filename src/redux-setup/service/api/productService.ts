@@ -1,6 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import baseQuery from "../baseQuery";
-import { IProduct } from "@/types/IProduct";
 
 
 export const productService = createApi({
@@ -27,10 +26,11 @@ export const productService = createApi({
                 method: "GET",
             })
         }),
-        getMaxMinPrice: builder.query<any, void>({
-            query: () => ({
-                url: "/api/minmax/products",
+        getMaxMinPrice: builder.query<any, any>({
+            query: (id) => ({
+                url: `/api/minmax/category`,
                 method: "GET",
+                params: { id: id }
             })
         })
     }),
@@ -39,6 +39,7 @@ export const productService = createApi({
 export const {
     useGetMaxMinPriceQuery,
     useGetCategoriesQuery,
+    useLazyGetMaxMinPriceQuery,
     useLazyGetProductByIdQuery,
     useGetProductByIdQuery,
     useGetProductQuery,

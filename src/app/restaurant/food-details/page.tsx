@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useAddOrderMutation } from '@/redux-setup/service/api/orderService';
 import { useAuth } from '@/share/hook/userAuth';
 import Swal from 'sweetalert2';
+import { useStatus } from '@/context/useStatusStateContext';
 
 const FoodDetail: React.FC = () => {
     const [addOrder, { isLoading: addLoading }] = useAddOrderMutation()
@@ -14,12 +15,12 @@ const FoodDetail: React.FC = () => {
     const id = searchParams.get("id") || " ";
     const { data, isError, isLoading, isSuccess, error } = useGetProductByIdQuery(id);
     const newData = data?.data?.data;
-    const { user, updateToken } = useAuth();
-
+    const { user } = useAuth();
+    const { setStatusState } = useStatus()
 
     const onClick = async () => {
         if (user) {
-            const response = await addOrder({
+            await addOrder({
                 customer_id: user?._id,
                 status: "cart",
                 addressOrder: user?.address || "",
@@ -30,6 +31,7 @@ const FoodDetail: React.FC = () => {
                 paymentMethod: "cod",
             }).unwrap();
             Swal.fire('Success!', "Item added to cart", 'success');
+            setStatusState(true);
         } else {
             Swal.fire('Error', "Please log in to make a purchase.", 'error')
         }
@@ -95,7 +97,7 @@ const FoodDetail: React.FC = () => {
                         icon={<ShoppingCartOutlined />}
                         onClick={onClick}
                     >
-                        BUY
+                        Add to card
                     </Button>
                 </Col>
             </Row>

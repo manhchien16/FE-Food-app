@@ -19,6 +19,7 @@ const Carousels: React.FC = () => (
           style={{
             objectFit: 'cover',
           }}
+          preview={false}
         />
       </h3>
     </div>
@@ -30,6 +31,7 @@ const Carousels: React.FC = () => (
           style={{
             objectFit: 'cover',
           }}
+          preview={false}
         />
       </h3>
     </div>
@@ -41,6 +43,7 @@ const Carousels: React.FC = () => (
           style={{
             objectFit: 'cover',
           }}
+          preview={false}
         />
       </h3>
     </div>

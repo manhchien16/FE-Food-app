@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Form, Input, Button, Row, Col, Spin } from 'antd';
+import { Form, Input, Button, Row, Col, Spin, Typography } from 'antd';
 import { Formik, Field, Form as FormikForm } from 'formik';
 import * as Yup from 'yup';
 import { useUserUpdateMutation } from '@/redux-setup/service/api/userService';
@@ -101,7 +101,11 @@ const InformationForm: React.FC<UserProps> = ({ user }) => {
                     <Row gutter={16}>
                         <Col xs={24} sm={24} md={12} lg={12}>
                             <Form.Item
-                                label="Name"
+                                label={
+                                    <Typography.Text>
+                                        Full name <span style={{ color: "red" }}>*</span>
+                                    </Typography.Text>
+                                }
                                 validateStatus={errors.fullName && touched.fullName ? 'error' : ''}
                                 help={errors.fullName && touched.fullName ? String(errors.fullName) : undefined}
                             >
@@ -110,7 +114,11 @@ const InformationForm: React.FC<UserProps> = ({ user }) => {
                         </Col>
                         <Col xs={24} sm={24} md={12} lg={12}>
                             <Form.Item
-                                label="Email"
+                                label={
+                                    <Typography.Text>
+                                        Email <span style={{ color: "red" }}>*</span>
+                                    </Typography.Text>
+                                }
                                 validateStatus={errors.email && touched.email ? 'error' : ''}
                                 help={errors.email && touched.email ? String(errors.email) : undefined}
                             >
@@ -121,7 +129,11 @@ const InformationForm: React.FC<UserProps> = ({ user }) => {
                     <Row gutter={16}>
                         <Col xs={24} sm={24} md={12} lg={12}>
                             <Form.Item
-                                label="Address"
+                                label={
+                                    <Typography.Text>
+                                        Address <span style={{ color: "red" }}>*</span>
+                                    </Typography.Text>
+                                }
                                 validateStatus={errors.address && touched.address ? 'error' : ''}
                                 help={errors.address && touched.address ? String(errors.address) : undefined}
                             >
@@ -130,9 +142,13 @@ const InformationForm: React.FC<UserProps> = ({ user }) => {
                         </Col>
                         <Col xs={24} sm={24} md={12} lg={12}>
                             <Form.Item
-                                label="Phone"
+                                label={
+                                    <Typography.Text>
+                                        Phone Number <span style={{ color: "red" }}>*</span>
+                                    </Typography.Text>
+                                }
                                 validateStatus={errors.phoneNumber && touched.phoneNumber ? 'error' : ''}
-                                help={errors.phoneNumber && touched.fullName ? String(errors.fullName) : undefined}
+                                help={errors.phoneNumber && touched.phoneNumber ? String(errors.phoneNumber) : undefined}
                             >
                                 <Field name="phoneNumber" as={Input} />
                             </Form.Item>

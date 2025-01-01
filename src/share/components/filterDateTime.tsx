@@ -1,6 +1,6 @@
-import { DatePicker, Space } from 'antd';
+import { Col, DatePicker, Row, Space } from 'antd';
 import React, { useState } from 'react';
-import type { RangeValue } from 'rc-picker/lib/interface'; // Import kiểu dữ liệu phù hợp
+import type { RangeValue } from 'rc-picker/lib/interface';
 import moment from 'moment';
 
 const { RangePicker } = DatePicker;
@@ -11,19 +11,52 @@ interface DateProps {
 
 const FilterDateTime: React.FC<DateProps> = ({ setFormattedDates }) => {
     const [selectedDates, setSelectedDates] = useState<RangeValue<moment.Moment>>(null);
-    const handleChange = (dates: RangeValue<moment.Moment>, dateStrings: [string, string]) => {
 
-        setSelectedDates(dates);
-        setFormattedDates(dateStrings);
+    const handleStartDateChange = (date: moment.Moment | null, dateString: string) => {
+        const updatedDates: RangeValue<moment.Moment> = [
+            date,
+            selectedDates?.[1] ?? null, // Nếu `selectedDates` là `null`, gán giá trị mặc định là `null`.
+        ];
+        setSelectedDates(updatedDates);
+        setFormattedDates([dateString, updatedDates[1]?.format("YYYY-MM-DD") || ""]);
+    };
+
+    const handleEndDateChange = (date: moment.Moment | null, dateString: string) => {
+        const updatedDates: RangeValue<moment.Moment> = [
+            selectedDates?.[0] ?? null,
+            date, // Nếu `selectedDates` là `null`, gán giá trị mặc định là `null`.
+        ];
+        setSelectedDates(updatedDates);
+        setFormattedDates([updatedDates[0]?.format("YYYY-MM-DD") || "", dateString]);
     };
 
     return (
         <Space direction="vertical" size={12}>
-            <RangePicker
-                renderExtraFooter={() => 'extra footer'}
-                showTime
-                onChange={handleChange}
-            />
+            <Row>
+                <Col span={10}>
+                    <DatePicker
+                        onChange={handleStartDateChange}
+                        format="YYYY-MM-DD"
+                        placeholder="Start Date"
+                    />
+                </Col>
+                <Col
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        padding: "0 10px",
+                    }}
+                >
+                    <p>{"->"}</p>
+                </Col>
+                <Col span={10}>
+                    <DatePicker
+                        onChange={handleEndDateChange}
+                        format="YYYY-MM-DD"
+                        placeholder="End Date"
+                    />
+                </Col>
+            </Row>
         </Space>
     );
 };

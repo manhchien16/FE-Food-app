@@ -12,3 +12,21 @@
 .silver-text {
     color: #64748b;
 }
+
+/* .ant-menu-horizontal:not(.ant-menu-dark) > .ant-menu-item-selected {
+    color: '#EE6D1F';
+} */
+
+
+.ant-slider-handle {
+    border: solid 2px #EE6D1F;
+}
+
+.ant-slider-track {
+    background-color: #EE6D1F;
+}
+
+.ant-btn-primary {
+    background-color: #EE6D1F !important;
+    border-color: #EE6D1F !important;
+}
