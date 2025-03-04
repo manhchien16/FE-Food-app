@@ -1,7 +1,7 @@
 import { MdOutlineLocalShipping } from "react-icons/md";
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect } from 'react';
 import { Button, Col, Empty, Row } from "antd";
-import { useGetOrderByStatusQuery, useUpdateStatusMutation } from "@/redux-setup/service/api/orderService";
+import { useGetOrderByStatusQuery, useLazyGetOrderByStatusQuery, useUpdateStatusMutation } from "@/redux-setup/service/api/orderService";
 import { useAuth } from "../hook/userAuth";
 import OrderDetailItems from "./OrderDetail-item";
 import moment from 'moment';
@@ -13,20 +13,27 @@ interface keyProps {
 }
 
 const OrderItem: React.FC<keyProps> = ({ status, dateTime }) => {
-    const { user } = useAuth()
+    const { user } = useAuth();
 
-    const { data, isSuccess, isLoading, isError, refetch } = useGetOrderByStatusQuery({
-        status: status,
-        id: user?._id || "",
-        startDate: dateTime?.[0] || "",
-        endDate: dateTime?.[1] || ""
-    });
-    const [updateStatus, { isSuccess: updateSucess }] = useUpdateStatusMutation()
+    const [statusState, setStatusState] = React.useState<string>(status);
+    const [getdata, { data }] = useLazyGetOrderByStatusQuery();
+    const [updateStatus, { isSuccess: updateSucess }] = useUpdateStatusMutation();
     const orders = data?.data?.data;
 
     useEffect(() => {
-        refetch();
-    }, [status, refetch, dateTime, updateSucess]);
+        setStatusState(status);
+    }, [status]);
+
+    useEffect(() => {
+        if (user?._id) {
+            getdata({
+                status: statusState,
+                id: user._id,
+                startDate: dateTime?.[0] || "",
+                endDate: dateTime?.[1] || ""
+            });
+        }
+    }, [dateTime, updateSucess, statusState, getdata, user?._id]);
 
     if (!orders || orders.length === 0) {
         return (
@@ -54,7 +61,7 @@ const OrderItem: React.FC<keyProps> = ({ status, dateTime }) => {
                 case 'delivered':
                     return data.deliveredDate;
                 case 'canceled':
-                    return data.canceled;
+                    return data.canceledDate;
                 default:
                     return undefined;
             }
@@ -76,30 +83,29 @@ const OrderItem: React.FC<keyProps> = ({ status, dateTime }) => {
                     await updateStatus({ _id: id, status: 'canceled' }).unwrap();
                     Swal.fire('Success', 'Already canceled!', 'success');
                 }
-            })
+            });
         } else if (status === 'delivered') {
             await updateStatus({ _id: id, status: 'delivered' }).unwrap();
             Swal.fire('Success', 'Thank you for using our service!', 'success');
         }
-    }
+    };
 
-    const displayButon = (status: any, id: any) => {
+    const displayButton = (status: any, id: any) => {
         switch (status) {
             case 'pending':
-                return <Button type="primary" onClick={() => onClick(id, 'cancel')} style={{ backgroundColor: "#EE6D1F", marginTop: '10px', color: 'white' }}>cancel</Button>
+                return <Button type="primary" onClick={() => onClick(id, 'cancel')} style={{ backgroundColor: "#EE6D1F", marginTop: '10px', color: 'white' }}>cancel</Button>;
             case 'shipping':
-                return <Button type="dashed" style={{ backgroundColor: "#EE6D1F", marginTop: '10px', color: 'white' }}>contact</Button>
+                return <Button type="dashed" style={{ backgroundColor: "#EE6D1F", marginTop: '10px', color: 'white' }}>contact</Button>;
             case 'shipped':
-                return <Button type="primary" onClick={() => onClick(id, 'delivered')} style={{ backgroundColor: "#EE6D1F", marginTop: '10px', color: 'white' }}>delivered</Button>
+                return <Button type="primary" onClick={() => onClick(id, 'delivered')} style={{ backgroundColor: "#EE6D1F", marginTop: '10px', color: 'white' }}>delivered</Button>;
             case 'delivered':
-                return <Button type="dashed" style={{ backgroundColor: "#EE6D1F", marginTop: '10px', color: 'white' }}>contact</Button>
+                return <Button type="dashed" style={{ backgroundColor: "#EE6D1F", marginTop: '10px', color: 'white' }}>contact</Button>;
             case 'canceled':
-                return <Button type="dashed" style={{ backgroundColor: "#EE6D1F", marginTop: '10px', color: 'white' }}>contact</Button>
+                return <Button type="dashed" style={{ backgroundColor: "#EE6D1F", marginTop: '10px', color: 'white' }}>contact</Button>;
             default:
                 return undefined;
         }
-    }
-
+    };
 
     return (
         <>
@@ -126,24 +132,24 @@ const OrderItem: React.FC<keyProps> = ({ status, dateTime }) => {
                         </Col>
                         <Col span={12}>
                             <div className="flex justify-end text-primary-xxl">
-                                <strong className="pr-1">Total Price:</strong>
-                                <span className="text-text-primary">${item.totalPrice}</span>
-                            </div>
-                            <div className="flex justify-end text-primary-xxl">
                                 <strong className="pr-1">Payment Method:</strong>
                                 <span className="text-text-primary">{item.paymentMethod}</span>
+                            </div>
+                            <div className="flex justify-end text-primary-xxl flex items-center">
+                                <strong className="pr-1">Total Price:</strong>
+                                <span className="text-text-primary font-bold">${item.totalPrice}</span>
                             </div>
                         </Col>
                     </Row>
                     <Row style={{ display: 'flex', justifyContent: 'flex-end' }}>
                         <Col>
-                            {displayButon(status, item._id)}
+                            {displayButton(status, item._id)}
                         </Col>
                     </Row>
                 </div>
             ))}
         </>
     );
-}
+};
 
 export default OrderItem;

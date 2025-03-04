@@ -30,6 +30,7 @@ const userSlice = createSlice({
         clearUser(state) {
             state.user = null;
             Cookies.remove('refreshToken');
+            localStorage.removeItem('persist:user');
         },
         updateUser(state, action: PayloadAction<{ fullName: string, phoneNumber: string, address: string, email: string }>) {
             if (state.user) {
@@ -40,7 +41,6 @@ const userSlice = createSlice({
                 if (email) state.user.email = email;
             }
         },
-
         updateAccessToken(state, action: PayloadAction<{ accessToken: string }>) {
             if (state.user) {
                 state.user.accessToken = action.payload.accessToken;

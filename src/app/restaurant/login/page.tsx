@@ -1,5 +1,5 @@
 'use client'
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, Typography } from 'antd';
 import Link from 'next/link';
 import { FacebookOutlined, GoogleOutlined } from '@ant-design/icons';
 import * as Yup from "yup"
@@ -12,11 +12,11 @@ const CreateSchema = Yup.object().shape({
     userName: Yup.string()
         .min(5, 'Too Short')
         .max(50, 'Too Long')
-        .required('required'),
+        .required('Please log in to your account.'),
     password: Yup.string()
         .min(6, 'Too Short')
         .max(50, 'Too Long')
-        .required('required'),
+        .required('Please log in to your password.'),
 });
 
 const Login = () => {
@@ -58,17 +58,21 @@ const Login = () => {
                     accessToken: res?.accessToken,
                 });
 
-                router.push("/");
+                router.push("/restaurant");
             }}
 
         >
             {({ values, handleChange, handleBlur, handleSubmit, errors, touched }) => (
-                <div style={{ maxWidth: 400, margin: '50px auto', padding: 20, border: '1px solid #ccc', borderRadius: 8 }}>
+                <div style={{ maxWidth: 400, margin: '50px auto', padding: 20, border: '1px solid #ccc', borderRadius: 8, backgroundColor: '#fff' }}>
                     <h2 style={{ textAlign: 'center' }}>Login</h2>
 
                     <Form name="login_form" layout="vertical" onFinish={handleSubmit}>
                         <Form.Item
-                            label="Username" name="userName"
+                            label={
+                                <Typography.Text>
+                                    UserName <span style={{ color: "red" }}>*</span>
+                                </Typography.Text>
+                            }
                             validateStatus={errors.userName && touched.userName ? "error" : ""}
                             help={touched.userName && errors.userName ? errors.userName : ""}>
                             <Input
@@ -81,7 +85,11 @@ const Login = () => {
                         </Form.Item>
 
                         <Form.Item
-                            label="Password" name="password"
+                            label={
+                                <Typography.Text>
+                                    Password <span style={{ color: "red" }}>*</span>
+                                </Typography.Text>
+                            }
                             validateStatus={errors.password && touched.password ? "error" : ""}
                             help={touched.password && errors.password ? errors.password : ""}
                         >
@@ -138,7 +146,7 @@ const Login = () => {
 
                         <div style={{ textAlign: 'center' }}>
                             <span>Dont have an account? </span>
-                            <Link href="/restaurant/register">Register</Link>
+                            <Link style={{ color: 'blue' }} href="/restaurant/register">Register</Link>
                         </div>
                     </Form>
                 </div>

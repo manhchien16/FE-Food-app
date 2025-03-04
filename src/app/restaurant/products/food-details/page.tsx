@@ -1,12 +1,13 @@
 "use client"
-import { Button, Col, Image, Row } from 'antd'
-import React from 'react'
+import { Button, Col, Image, InputNumber, Row } from 'antd'
+import React, { useState } from 'react'
 import { ShoppingCartOutlined } from '@ant-design/icons';
 import { useGetProductByIdQuery } from '@/redux-setup/service/api/productService';
 import { useSearchParams } from 'next/navigation';
 import { useAddOrderMutation } from '@/redux-setup/service/api/orderService';
 import { useAuth } from '@/share/hook/userAuth';
 import Swal from 'sweetalert2';
+import { useStatus } from '@/context/useStatusStateContext';
 
 const FoodDetail: React.FC = () => {
     const [addOrder, { isLoading: addLoading }] = useAddOrderMutation()
@@ -14,26 +15,33 @@ const FoodDetail: React.FC = () => {
     const id = searchParams.get("id") || " ";
     const { data, isError, isLoading, isSuccess, error } = useGetProductByIdQuery(id);
     const newData = data?.data?.data;
-    const { user, updateToken } = useAuth();
-
+    const { user } = useAuth();
+    const { setStatusState } = useStatus()
+    const [number, setNumber] = useState(1);
+    console.log(number);
 
     const onClick = async () => {
         if (user) {
-            const response = await addOrder({
+            await addOrder({
                 customer_id: user?._id,
                 status: "cart",
                 addressOrder: user?.address || "",
                 phoneNumberOrder: user?.phoneNumber || "",
                 product_id: newData._id,
-                quantity: 1,
+                quantity: number,
                 note: "",
                 paymentMethod: "cod",
             }).unwrap();
             Swal.fire('Success!', "Item added to cart", 'success');
+            setStatusState(true);
         } else {
             Swal.fire('Error', "Please log in to make a purchase.", 'error')
         }
     };
+
+    const onChange = (value: number | null) => {
+        setNumber(value || 1);
+    }
     const isSoldOut = newData?.stock === 0;
 
     return (
@@ -80,6 +88,7 @@ const FoodDetail: React.FC = () => {
                             <p className="break-words">
                                 <strong>Price:</strong> <span className='text-text-primary'> ${newData?.price}</span>
                             </p>
+                            <InputNumber style={{ margin: '5px 0' }} min={1} max={newData?.stock} defaultValue={1} onChange={onChange} />
                         </div>
                     </div>
                     <Button
@@ -95,7 +104,7 @@ const FoodDetail: React.FC = () => {
                         icon={<ShoppingCartOutlined />}
                         onClick={onClick}
                     >
-                        BUY
+                        Add to card
                     </Button>
                 </Col>
             </Row>

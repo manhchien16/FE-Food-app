@@ -3,34 +3,37 @@ import React, { useEffect } from "react";
 import { Button, Result } from "antd";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/share/hook/userAuth";
+import { useLazyGetUserByTokenQuery } from "@/redux-setup/service/api/userService";
 
 const LoginSuccess: React.FC = () => {
+    const [getUser, { data: userData }] = useLazyGetUserByTokenQuery();
     const router = useRouter();
     const searchParams = useSearchParams();
     const accessToken = searchParams.get("accessToken");
-    const user = searchParams.get("user");
 
     const { login } = useAuth();
 
     useEffect(() => {
-        if (user && accessToken) {
-            const userData = JSON.parse(user);
+        if (accessToken) {
+            getUser({ token: accessToken });
+        }
+    }, [accessToken]);
+
+    useEffect(() => {
+        if (userData) {
             login({
                 _id: userData?._id,
                 fullName: userData?.fullName,
                 email: userData?.email,
                 phoneNumber: userData?.phoneNumber,
                 address: userData?.address,
-                accessToken: accessToken,
+                accessToken: accessToken || "",
             });
         }
-    }, [user, accessToken, login]);
-
+    }, [userData])
     const handleOk = () => {
-        router.push("/");
+        router.push("/restaurant");
     };
-
-    console.log("haha", useAuth().user);
 
 
     return (

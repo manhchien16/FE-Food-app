@@ -23,10 +23,19 @@ export const userService = createApi({
                 body: user
             }),
         }),
+        getUserByToken: builder.query<any, { token: string }>({
+            query: ({ token }) => ({
+                url: `/api/user`,
+                method: 'GET',
+                params: { token: token }
+            }),
+        }),
     }),
 });
 
 export const {
     useUserUpdateMutation,
     useRegisterMutation,
+    useGetUserByTokenQuery,
+    useLazyGetUserByTokenQuery
 } = userService;
