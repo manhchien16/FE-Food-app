@@ -1,4 +1,3 @@
-// hoc/ProtectedRoute.tsx
 import { useAuth } from "@/share/hook/userAuth";
 import { Spin } from "antd";
 import { useRouter } from "next/navigation";
@@ -12,7 +11,7 @@ const ProtectedRoute = (WrappedComponent: React.ComponentType) => {
 
         useEffect(() => {
             if (!user) {
-                router.push('/');
+                router.push('/restaurant/login');
             }
         }, [user, router]);
 

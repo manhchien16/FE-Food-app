@@ -7,7 +7,6 @@ import { useLogOutMutation } from '@/redux-setup/service/api/authService';
 import Swal from 'sweetalert2';
 import Search from '../Search';
 import React, { useEffect, useState } from 'react';
-import { useNumber } from '@/context/useNumberContext';
 import { useLazyGetOrderByStatusQuery, useLazyGetOrderDetailsQuery } from '@/redux-setup/service/api/orderService';
 import { useStatus } from '@/context/useStatusStateContext';
 const { Text } = Typography;
@@ -18,7 +17,6 @@ const HeaderComponents = () => {
     const [numberCart, setNumberCart] = useState<number>();
     const router = useRouter();
     const { user, logout } = useAuth();
-    const { number } = useNumber();
     const [dataOrders, { data: dataOrder, isSuccess: orderSuccess }] = useLazyGetOrderByStatusQuery();
     const [dataOrderDetail, { data: dataOrderDetails }] = useLazyGetOrderDetailsQuery();
     const { StatusState, setStatusState } = useStatus();
@@ -40,7 +38,7 @@ const HeaderComponents = () => {
         } else {
             setNumberCart(0)
         }
-    }, [dataOrder, dataOrderDetail, isSuccess, StatusState]);
+    }, [dataOrder, dataOrderDetail, StatusState]);
 
     const onclickLogOut = async () => {
         Swal.fire({
@@ -51,7 +49,7 @@ const HeaderComponents = () => {
             cancelButtonText: 'No'
         }).then(async (result) => {
             if (result.isConfirmed) {
-                await logoutSever;
+                await logoutSever();
                 Swal.fire('Success', 'Logout success!', 'success');
                 logout();
                 router.push("/restaurant/login")
@@ -78,7 +76,7 @@ const HeaderComponents = () => {
             <Row align="middle" justify="space-between" gutter={[16, 16]} className="pb-5">
                 {/* Logo */}
                 <Col xs={24} sm={24} md={6} lg={4}>
-                    <Link href="/">
+                    <Link href="/restaurant">
                         <div style={{ color: 'white', fontSize: '1.5rem', fontWeight: 'bold' }} className="float-left">
                             VMC
                         </div>

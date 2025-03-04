@@ -3,8 +3,6 @@ import React, { useState } from 'react';
 import type { RangeValue } from 'rc-picker/lib/interface';
 import moment from 'moment';
 
-const { RangePicker } = DatePicker;
-
 interface DateProps {
     setFormattedDates: (dateStrings: [string, string]) => void;
 }
@@ -15,19 +13,25 @@ const FilterDateTime: React.FC<DateProps> = ({ setFormattedDates }) => {
     const handleStartDateChange = (date: moment.Moment | null, dateString: string) => {
         const updatedDates: RangeValue<moment.Moment> = [
             date,
-            selectedDates?.[1] ?? null, // Nếu `selectedDates` là `null`, gán giá trị mặc định là `null`.
+            selectedDates?.[1] ?? null,
         ];
         setSelectedDates(updatedDates);
-        setFormattedDates([dateString, updatedDates[1]?.format("YYYY-MM-DD") || ""]);
+        setFormattedDates([
+            dateString,
+            updatedDates[1]?.format("YYYY-MM-DD") || ""
+        ]);
     };
 
     const handleEndDateChange = (date: moment.Moment | null, dateString: string) => {
         const updatedDates: RangeValue<moment.Moment> = [
             selectedDates?.[0] ?? null,
-            date, // Nếu `selectedDates` là `null`, gán giá trị mặc định là `null`.
+            date,
         ];
         setSelectedDates(updatedDates);
-        setFormattedDates([updatedDates[0]?.format("YYYY-MM-DD") || "", dateString]);
+        setFormattedDates([
+            updatedDates[0]?.format("YYYY-MM-DD") || "",
+            dateString
+        ]);
     };
 
     return (

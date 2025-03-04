@@ -13,7 +13,6 @@ import ProtectedRoute from "@/hoc/ProtectedRoute";
 const Profile: React.FC = () => {
     const user = useAuth().user;
     const [formattedDates, setFormattedDates] = useState<[string, string] | null>(null);
-
     return (
         <>
             <Tabs defaultActiveKey="1" style={{ minHeight: "100%" }}>

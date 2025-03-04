@@ -12,7 +12,7 @@ const Search = () => {
 
     const onSearch = () => {
         setData('');
-        router.push(`/restaurant/search?name=${data}`)
+        router.push(`/restaurant/products?name=${data}`)
     }
 
     return (

@@ -12,12 +12,9 @@ const Search = () => {
     const getCategoryId = getParams.get('id');
     const getName = getParams.get('name');
     const [currentPage, setCurrentPage] = useState(1);
-    const [priceRange, setPriceRange] = useState<{ minPrice: number; maxPrice: number }>({
-        minPrice: 0,
-        maxPrice: 100000000000000000000,
-    });
-    const minPrice = priceRange?.minPrice;
-    const maxPrice = priceRange?.maxPrice
+    const [priceRange, setPriceRange] = useState<{ minPrice: number; maxPrice: number }>();
+    const minPrice = priceRange?.minPrice ?? undefined;
+    const maxPrice = priceRange?.maxPrice ?? undefined
     const { data, isLoading, isSuccess, isError, refetch } = useGetProductQuery({
         name: getName,
         category_id: getCategoryId,
@@ -46,23 +43,25 @@ const Search = () => {
 
     return (
         <>
-            {data?.data?.pagination?.totalItem === 0 ? (
-                <Empty style={{ minHeight: '600px' }} description={<span>No product found</span>} image={Empty.PRESENTED_IMAGE_SIMPLE} />
-            ) : (
-                <div>
-                    <Row gutter={[16, 16]}>
-                        <Col xs={24} sm={24} md={24} lg={5}>
-                            <TreeCollection setPriceRanges={setPriceRange} minMax={dataMinMax} key={getCategoryId} />
-                        </Col>
+            <Row gutter={[16, 16]}>
+                <Col xs={24} sm={24} md={24} lg={5}>
+                    <TreeCollection setPriceRanges={setPriceRange} minMax={dataMinMax} key={getCategoryId} />
+                </Col>
+                {data?.data?.pagination?.totalItem === 0 ? (
+                    <div style={{ display: 'flex', justifyContent: 'center', minHeight: '600px', width: '100%' }}>
+                        <Empty description={<span>No product found</span>} image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                    </div>
+                ) : (
+                    <>
                         <Col xs={24} sm={24} md={24} lg={19}>
                             <Foods foods={data?.data?.data} />
                         </Col>
-                    </Row>
-                    <div className="pt-5 flex justify-end">
-                        <Paginations pagination={data?.data?.pagination} setCurrentPage={setCurrentPage} />
-                    </div>
-                </div>
-            )}
+                    </>
+                )}
+            </Row>
+            <Row className="pt-5 flex justify-end">
+                <Paginations pagination={data?.data?.pagination} setCurrentPage={setCurrentPage} />
+            </Row>
         </>
     );
 }
